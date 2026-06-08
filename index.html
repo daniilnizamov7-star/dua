@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0f1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Дуа • Даниил</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #080c18;
+      --card:     #0f1628;
+      --card2:    #141c35;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #34d399;
+      --accent2:  #6ee7b7;
+      --gold:     #f59e0b;
+      --gold2:    #fcd34d;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --muted2:   #64748b;
+      --danger:   #f87171;
+      --purple:   #a78bfa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── ШАПКА ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,12,24,0.92);
+      backdrop-filter: blur(16px);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .header-title { font-size: 1.1rem; font-weight: 900; color: var(--text); flex: 1; }
+    .header-sub { font-size: 0.72rem; color: var(--muted); }
+    .progress-ring { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring .track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 3; }
+    .progress-ring .fill { fill: none; stroke: var(--accent); stroke-width: 3;
+      stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+    .progress-ring .label { position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 800; color: var(--accent); }
+
+    /* ── ТАБЫ ── */
+    .tabs {
+      display: flex; gap: 0; padding: 0.75rem 1rem 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .tab {
+      flex: 1; padding: 0.6rem 0.5rem; text-align: center;
+      font-size: 0.78rem; font-weight: 700; color: var(--muted2);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.2s; border-radius: 0;
+      background: none; border-left: none; border-right: none; border-top: none;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── КОНТЕНТ ── */
+    .content { padding: 1rem; padding-bottom: 6rem; }
+
+    /* ── ДУА КАРТОЧКА ── */
+    .dua-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      margin-bottom: 0.875rem;
+      overflow: hidden;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .dua-card.done {
+      border-color: rgba(52,211,153,0.3);
+      background: linear-gradient(135deg, rgba(52,211,153,0.05), var(--card));
+    }
+    .dua-card.done::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .dua-header {
+      padding: 0.875rem 1rem 0.5rem;
+      display: flex; align-items: flex-start; gap: 0.6rem;
+    }
+    .dua-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 900; color: var(--accent);
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .dua-card.done .dua-num { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+    .dua-title { font-size: 0.82rem; font-weight: 800; color: var(--text); line-height: 1.3; flex: 1; }
+    .dua-badge {
+      font-size: 0.6rem; font-weight: 700; padding: 0.15rem 0.4rem;
+      border-radius: 0.4rem; flex-shrink: 0;
+    }
+    .badge-sunnah { background: rgba(245,158,11,0.15); color: var(--gold); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-personal { background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+    .badge-morning { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+    .badge-evening { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); }
+
+    /* Арабский текст */
+    .dua-arabic {
+      font-family: 'Amiri', serif;
+      font-size: 1.35rem;
+      line-height: 2;
+      direction: rtl;
+      text-align: right;
+      color: var(--accent2);
+      padding: 0.5rem 1rem 0.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Транслитерация */
+    .dua-translit {
+      font-size: 0.8rem; color: var(--muted);
+      padding: 0.25rem 1rem;
+      font-style: italic; line-height: 1.6;
+    }
+
+    /* Перевод */
+    .dua-translation {
+      font-size: 0.85rem; color: var(--text);
+      padding: 0.25rem 1rem 0.75rem;
+      line-height: 1.6;
+    }
+
+    /* Источник */
+    .dua-source {
+      font-size: 0.68rem; color: var(--gold);
+      padding: 0 1rem 0.5rem;
+      font-weight: 700;
+    }
+
+    /* Кнопка счётчика */
+    .dua-counter {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem 0.875rem;
+    }
+    .counter-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(52,211,153,0.1); border: 1.5px solid rgba(52,211,153,0.3);
+      color: var(--accent); font-size: 1.1rem; font-weight: 900;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .counter-btn:active { transform: scale(0.9); background: rgba(52,211,153,0.2); }
+    .counter-display {
+      font-size: 1rem; font-weight: 800; color: var(--text);
+      min-width: 2rem; text-align: center;
+    }
+    .counter-target { font-size: 0.72rem; color: var(--muted); flex: 1; }
+    .counter-dots {
+      display: flex; gap: 0.3rem; flex-wrap: wrap;
+    }
+    .counter-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      transition: all 0.2s;
+    }
+    .counter-dot.filled { background: var(--accent); border-color: var(--accent); }
+
+    /* Кнопка принять */
+    .dua-done-btn {
+      width: calc(100% - 2rem); margin: 0 1rem 0.875rem;
+      padding: 0.65rem; border-radius: 0.875rem;
+      border: 1.5px solid rgba(52,211,153,0.3);
+      background: transparent; color: var(--accent);
+      font-size: 0.85rem; font-weight: 800;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+    }
+    .dua-done-btn.done {
+      background: var(--accent); color: #0f172a;
+      border-color: var(--accent);
+    }
+    .dua-done-btn:active { transform: scale(0.98); }
+
+    /* ── СЕКЦИЯ ЗАГОЛОВОК ── */
+    .section-label {
+      font-size: 0.65rem; font-weight: 900; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted2);
+      padding: 0.25rem 0 0.75rem; margin-top: 0.25rem;
+    }
+
+    /* ── ИТОГО БЛОК ── */
+    .summary-card {
+      background: linear-gradient(135deg, rgba(52,211,153,0.1), rgba(52,211,153,0.03));
+      border: 1px solid rgba(52,211,153,0.2);
+      border-radius: 1.25rem; padding: 1.25rem;
+      margin-bottom: 1rem; text-align: center;
+    }
+    .summary-title { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .summary-count { font-size: 2.5rem; font-weight: 900; color: var(--accent); line-height: 1; }
+    .summary-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+    .summary-arabic {
+      font-family: 'Amiri', serif; font-size: 1rem;
+      color: var(--accent2); margin-top: 0.75rem;
+      direction: rtl; line-height: 1.8;
+    }
+
+    /* ── СБРОС КНОПКА ── */
+    .reset-btn {
+      width: 100%; padding: 0.75rem;
+      border-radius: 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--muted2);
+      font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      font-family: 'Nunito', sans-serif; margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .reset-btn:active { background: rgba(255,255,255,0.05); }
+
+    /* ── НИЖНЯЯ НАВИГАЦИЯ ── */
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(8,12,24,0.95); backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
+      display: flex; gap: 0.5rem;
+    }
+    .bottom-btn {
+      flex: 1; padding: 0.65rem; border-radius: 0.875rem;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+    }
+    .bottom-btn.primary {
+      background: var(--accent); color: #0f172a;
+      border-color: var(--accent); font-size: 0.85rem;
+    }
+    .bottom-btn:active { transform: scale(0.97); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+      background: #1e293b; border: 1px solid var(--accent);
+      border-radius: 2rem; padding: 0.5rem 1.25rem;
+      font-size: 0.82rem; font-weight: 700; color: var(--text);
+      white-space: nowrap; z-index: 999;
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ── АНИМАЦИИ ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .dua-card { animation: fadeIn 0.3s ease both; }
+
+    /* Прогресс бар */
+    .progress-bar-wrap {
+      height: 3px; background: rgba(255,255,255,0.06);
+      margin: 0 1rem; border-radius: 2px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 2px; transition: width 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ШАПКА -->
+<div class="header">
+  <div style="flex:1">
+    <div class="header-title">🤲 Дуа</div>
+    <div class="header-sub" id="header-sub">Загрузка...</div>
+  </div>
+  <div class="progress-ring">
+    <svg width="44" height="44" viewBox="0 0 44 44">
+      <circle class="track" cx="22" cy="22" r="18"/>
+      <circle class="fill" id="progress-circle" cx="22" cy="22" r="18"
+        stroke-dasharray="113" stroke-dashoffset="113"/>
+    </svg>
+    <div class="label" id="progress-label">0%</div>
+  </div>
+</div>
+
+<!-- ТАБЫ -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('sunnah')" id="tab-sunnah">🕌 После намаза</button>
+  <button class="tab" onclick="switchTab('personal')" id="tab-personal">💚 Личные дуа</button>
+  <button class="tab" onclick="switchTab('daily')" id="tab-daily">☀️ Утро/Вечер</button>
+</div>
+
+<!-- КОНТЕНТ -->
+<div class="content" id="content"></div>
+
+<!-- ТОСТ -->
+<div class="toast" id="toast"></div>
+
+<!-- НИЖНЯЯ ПАНЕЛЬ -->
+<div class="bottom-bar">
+  <button class="bottom-btn" onclick="resetDay()">🔄 Сброс</button>
+  <button class="bottom-btn primary" onclick="markAllDone()">✅ Всё прочитано</button>
+</div>
+
+<script>
+const DUA_DATA = {
+  sunnah: [
+    {
+      id: 's1',
+      title: 'Истигфар трижды',
+      arabic: 'أَسْتَغْفِرُ اللهَ',
+      translit: 'Астагфируллах',
+      translation: 'Прошу прощения у Аллаха',
+      source: '📚 Муслим, 591',
+      count: 3,
+      type: 'counter'
+    },
+    {
+      id: 's2',
+      title: 'Аллахумма Антас-Салям',
+      arabic: 'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+      translit: 'Аллахумма Антас-Салям ва минкас-Салям, табаракта йа Заль-Джаляли валь-Икрам',
+      translation: 'О Аллах, Ты — Мир, и от Тебя мир. Благословен Ты, о Обладатель величия и щедрости',
+      source: '📚 Муслим, 592',
+      type: 'done'
+    },
+    {
+      id: 's3',
+      title: 'Субханаллах × 33',
+      arabic: 'سُبْحَانَ اللهِ',
+      translit: 'Субханаллах',
+      translation: 'Пречист Аллах',
+      source: '📚 Муслим, 595',
+      count: 33,
+      type: 'counter'
+    },
+    {
+      id: 's4',
+      title: 'Алхамдулиллях × 33',
+      arabic: 'الْحَمْدُ لِلَّهِ',
+      translit: 'Алхамдулиллях',
+      translation: 'Хвала Аллаху',
+      source: '📚 Муслим, 595',
+      count: 33,
+      type: 'counter'
+    },
+    {
+      id: 's5',
+      title: 'Аллаху Акбар × 33 + завершение',
+      arabic: 'اللهُ أَكْبَرُ',
+      translit: 'Аллаху Акбар',
+      translation: 'Аллах Велик',
+      source: '📚 Муслим, 595',
+      count: 33,
+      type: 'counter',
+      note: 'После 33 раз: «Ля иляха иллаллаху вахдаху ля шарика лях, ляхуль-мульку ва ляхуль-хамду ва хуа аля кулли шайин кадир»'
+    },
+    {
+      id: 's6',
+      title: 'Аятуль-Курси',
+      arabic: 'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',
+      translit: 'Аллаху ля иляха илля Хуваль-Хаййуль-Каййум...',
+      translation: 'Аллах — нет бога кроме Него, Живой, Вечносущий... (Аль-Бакара, 255)',
+      source: '📚 Бухари, 4723 — кто читает после намаза, входит в Рай',
+      type: 'done'
+    },
+    {
+      id: 's7',
+      title: 'Сайидуль-истигфар',
+      arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ',
+      translit: 'Аллахумма Анта Рабби, ля иляха илля Анта, халякътани ва ана абдук, ва ана аля ахдика ва вадика мастатату...',
+      translation: 'О Аллах, Ты — Господь мой, нет бога кроме Тебя. Ты создал меня, я — Твой раб, я верен Твоему завету...',
+      source: '📚 Бухари, 6306 — господин истигфара',
+      type: 'done'
+    },
+    {
+      id: 's8',
+      title: 'Муаввизат (113-114 суры) × 3',
+      arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ',
+      translit: 'Куль аузу бираббиль-фалак... Куль аузу бираббин-нас...',
+      translation: 'Скажи: «Прибегаю к защите Господа рассвета...» (Аль-Фаляк + Ан-Нас)',
+      source: '📚 Абу Дауд, 5082 — по 3 раза после каждого намаза',
+      count: 3,
+      type: 'counter'
+    }
+  ],
+
+  personal: [
+    {
+      id: 'p1',
+      title: 'Дуа об увеличении дохода',
+      arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ فَإِنَّهُ لَا يَمْلِكُهَا إِلَّا أَنْتَ',
+      translit: 'Аллахумма инни асалюка мин фадлика ва рахматика, фа-иннаху ля ямликуха илля Анта',
+      translation: 'О Аллах, я прошу Тебя о милости и щедрости Твоей, ибо никто не владеет ими, кроме Тебя',
+      source: '📚 Аль-Хаким',
+      type: 'done'
+    },
+    {
+      id: 'p2',
+      title: 'Дуа о нужде',
+      arabic: 'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ',
+      translit: 'Рабби инни лима анзальта иляйа мин хайрин факир',
+      translation: 'Господи! Я нуждаюсь во всяком добре, которое Ты ниспошлёшь мне',
+      source: '📚 Аль-Касас, 24 — дуа Мусы ﷺ',
+      type: 'done'
+    },
+    {
+      id: 'p3',
+      title: 'Дуа о прощении (Лейлятуль-Кадр)',
+      arabic: 'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي',
+      translit: 'Аллахумма иннака афуввун каримун тухиббуль-афва фа\'фу анни',
+      translation: 'О Аллах, Ты прощающий, любишь прощение — так прости же меня',
+      source: '📚 Тирмизи, 3513',
+      type: 'done'
+    },
+    {
+      id: 'p4',
+      title: 'Дуа об облегчении дел',
+      arabic: 'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
+      translit: 'Аллахумма ля сахля илля ма джааль-таху сахлян, ва Анта тадж\'алюль-хазна иза ши\'та сахлян',
+      translation: 'О Аллах, нет ничего лёгкого, кроме того, что Ты сделал лёгким, и если Ты пожелаешь — сделаешь трудное лёгким',
+      source: '📚 Ибн Хиббан, 3/255',
+      type: 'done'
+    },
+    {
+      id: 'p5',
+      title: 'Дуа о знаниях',
+      arabic: 'اللَّهُمَّ عَلِّمْنَا مَا يَنفَعُنَا وَانفَعْنَا بِمَا عَلَّمْتَنَا وَزِدْنَا عِلْمًا',
+      translit: 'Аллахумма аллимна ма янфауна ванфана биля аллямтана ва зидна ильман',
+      translation: 'О Аллах, дай нам пользу от знаний которые мы имеем, одари нас полезными знаниями и прибавь нам знаний',
+      source: '📚 Тирмизи, 3599',
+      type: 'done'
+    },
+    {
+      id: 'p6',
+      title: 'Дуа о вере и Рае',
+      arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ إِيمَانًا لَا يَرْتَدُّ وَنَعِيمًا لَا يَنْفَدُ',
+      translit: 'Аллахумма инни асалюка иманан ля йартадду, ва наиман ля янфаду, ва мурафаката мухаммадин ﷺ фи аля джаннатиль-хульд',
+      translation: 'О Аллах, прошу Тебя веры, которая не исчезнет, блаженства, которое не закончится, и соседства с Пророком ﷺ в высших садах Рая',
+      source: '📚 Ахмад, 3/120',
+      type: 'done'
+    },
+    {
+      id: 'p7',
+      title: 'Дуа о милосердии Аллаха',
+      arabic: 'اللَّهُمَّ رَحْمَتَكَ أَرْجُو فَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ',
+      translit: 'Аллахумма рахматака арджу фаля такильни иля нафси тарфата айнин ва аслих ли шани куллях, ля иляха илля Ант',
+      translation: 'О Аллах, милосердия Твоего прошу — не доверяй меня душе моей ни на мгновение и приведи в порядок все дела мои; нет бога, кроме Тебя',
+      source: '📚 Абу Дауд, 5090',
+      type: 'done'
+    },
+    {
+      id: 'p8',
+      title: 'Дуа о защите от 4 вещей',
+      arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ',
+      translit: 'Аллахумма инни аузу бика миналь-хамми валь-хазани, вальаджзи валь-касяли, вальбухли вальджубни, ва далаид-дайни ва гальбатир-риджаль',
+      translation: 'О Аллах, прибегаю к Твоей защите от тревоги и печали, от слабости и лени, от скупости и трусости, от долгов и власти людей',
+      source: '📚 Бухари, 6369',
+      type: 'done'
+    },
+    {
+      id: 'p9',
+      title: 'Дуа о благом характере',
+      arabic: 'اللَّهُمَّ كَمَا حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي',
+      translit: 'Аллахумма кама хассанта хальки фахассин хулюки',
+      translation: 'О Аллах, как Ты украсил мой внешний облик — украси и мой нрав',
+      source: '📚 Ахмад, 3748',
+      type: 'done'
+    },
+    {
+      id: 'p10',
+      title: 'Дуа о здоровье',
+      arabic: 'اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ وَاشْفِ أَنْتَ الشَّافِي',
+      translit: 'Аллахумма Рабба-н-наси азхибиль-баса ваш-фи, Анташ-Шафи, ля шифаа илля шифаука, шифаан ля йугадиру сакаман',
+      translation: 'О Аллах, Господь людей, удали болезнь и исцели! Ты — Целитель, нет исцеления кроме Твоего, такого чтобы не оставило следа болезни',
+      source: '📚 Бухари, 5744',
+      type: 'done'
+    }
+  ],
+
+  daily: [
+    {
+      id: 'd1',
+      title: 'Дуа пробуждения',
+      arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
+      translit: 'Алхамдулилляхиль-лязи ахйана бадама аматана ва иляйхин-нушур',
+      translation: 'Хвала Аллаху, Который оживил нас после того, как умертвил, и к Нему возвращение',
+      source: '📚 Бухари, 6312 — утро',
+      badge: 'morning',
+      type: 'done'
+    },
+    {
+      id: 'd2',
+      title: 'Утреннее дуа (защита дня)',
+      arabic: 'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ',
+      translit: 'Аллахумма бика асбахна ва бика амсайна ва бика нахйа ва бика намуту ва иляйкан-нушур',
+      translation: 'О Аллах, с Тобой мы вступаем в утро и вечер, с Тобой живём и умираем, и к Тебе возвращение',
+      source: '📚 Тирмизи, 3391 — утром',
+      badge: 'morning',
+      type: 'done'
+    },
+    {
+      id: 'd3',
+      title: 'Утренний тасбих',
+      arabic: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ',
+      translit: 'Субханаллахи ва бихамдихи',
+      translation: 'Пречист Аллах и хвала Ему',
+      source: '📚 Бухари, 6405 — 100 раз утром, стирает грехи',
+      count: 100,
+      badge: 'morning',
+      type: 'counter'
+    },
+    {
+      id: 'd4',
+      title: 'Господин истигфара — утром',
+      arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ',
+      translit: 'Аллахумма Анта Рабби ля иляха илля Ант...',
+      translation: 'Сайидуль-истигфар — кто произнесёт его утром с убеждением и умрёт в этот день — войдёт в Рай',
+      source: '📚 Бухари, 6306',
+      badge: 'morning',
+      type: 'done'
+    },
+    {
+      id: 'd5',
+      title: 'Вечернее дуа (защита ночи)',
+      arabic: 'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ',
+      translit: 'Аллахумма бика амсайна ва бика асбахна ва бика нахйа ва бика намуту ва иляйкаль-масир',
+      translation: 'О Аллах, с Тобой мы вступаем в вечер и утро, с Тобой живём и умираем, и к Тебе конечное возвращение',
+      source: '📚 Тирмизи, 3391 — вечером',
+      badge: 'evening',
+      type: 'done'
+    },
+    {
+      id: 'd6',
+      title: 'Вечерний тасбих × 100',
+      arabic: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ',
+      translit: 'Субханаллахи ва бихамдихи',
+      translation: 'Пречист Аллах и хвала Ему — 100 раз вечером',
+      source: '📚 Бухари, 6405',
+      count: 100,
+      badge: 'evening',
+      type: 'counter'
+    },
+    {
+      id: 'd7',
+      title: 'Дуа перед сном',
+      arabic: 'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا',
+      translit: 'Аллахумма бисмика амуту ва ахйа',
+      translation: 'О Аллах, с именем Твоим я умираю и оживаю',
+      source: '📚 Бухари, 6314',
+      badge: 'evening',
+      type: 'done'
+    },
+    {
+      id: 'd8',
+      title: 'Аятуль-Курси перед сном',
+      arabic: 'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',
+      translit: 'Аллаху ля иляха илля Хуваль-Хаййуль-Каййум...',
+      translation: 'Кто прочитает Аятуль-Курси перед сном — Аллах сохранит его, и к нему не приблизится шайтан до утра',
+      source: '📚 Бухари, 5010',
+      badge: 'evening',
+      type: 'done'
+    },
+    {
+      id: 'd9',
+      title: 'Дуа-таубá (покаяние дня)',
+      arabic: 'أَسْتَغْفِرُ اللهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ',
+      translit: 'Астагфируллахаль-азымаль-лязи ля иляха илля Хуваль-Хаййуль-Каййуму ва атубу иляйх',
+      translation: 'Прошу прощения у Великого Аллаха, кроме Которого нет бога, Живого, Вечносущего, и приношу Ему покаяние',
+      source: '📚 Тирмизи, 3577 — стирает грехи даже если их как морская пена',
+      badge: 'evening',
+      type: 'done'
+    }
+  ]
+};
+
+// ── СОСТОЯНИЕ ──
+let state = {};
+let currentTab = 'sunnah';
+
+const getKey = () => {
+  const d = new Date();
+  return `dua_state_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+};
+
+const loadState = () => {
+  try {
+    const s = localStorage.getItem(getKey());
+    state = s ? JSON.parse(s) : {};
+  } catch(e) { state = {}; }
+};
+
+const saveState = () => {
+  try { localStorage.setItem(getKey(), JSON.stringify(state)); } catch(e) {}
+};
+
+// ── РЕНДЕР ──
+const getBadgeHtml = (dua) => {
+  const badgeMap = {
+    morning: ['badge-morning', '🌅 Утро'],
+    evening: ['badge-evening', '🌙 Вечер'],
+    sunnah:  ['badge-sunnah', '⭐ Сунна'],
+    personal: ['badge-personal', '💚 Личное']
+  };
+  const key = dua.badge || currentTab;
+  const [cls, label] = badgeMap[key] || badgeMap.sunnah;
+  return `<span class="dua-badge ${cls}">${label}</span>`;
+};
+
+const renderCounter = (dua) => {
+  const cur = state[dua.id + '_count'] || 0;
+  const target = dua.count;
+  const done = cur >= target;
+  const dots = Array.from({length: Math.min(target, 10)}, (_, i) =>
+    `<div class="counter-dot ${i < Math.min(cur, 10) ? 'filled' : ''}"></div>`
+  ).join('');
+
+  return `
+    <div class="dua-counter">
+      <button class="counter-btn" onclick="tapCounter('${dua.id}', ${target})" ${done ? 'disabled style="opacity:0.4"' : ''}>
+        ${done ? '✓' : '+'}
+      </button>
+      <div class="counter-display">${cur}</div>
+      <div class="counter-target">/ ${target} ${done ? '✅' : ''}</div>
+      ${target <= 10 ? `<div class="counter-dots">${dots}</div>` : ''}
+    </div>
+    ${dua.note ? `<div style="font-size:0.72rem;color:var(--muted);padding:0 1rem 0.75rem;line-height:1.6;font-style:italic;">💡 ${dua.note}</div>` : ''}
+  `;
+};
+
+const renderCard = (dua, idx) => {
+  const isDone = dua.type === 'counter'
+    ? (state[dua.id + '_count'] || 0) >= dua.count
+    : !!state[dua.id];
+
+  return `
+    <div class="dua-card ${isDone ? 'done' : ''}" id="card-${dua.id}" style="animation-delay:${idx * 0.04}s">
+      <div class="dua-header">
+        <div class="dua-num">${isDone ? '✓' : idx + 1}</div>
+        <div class="dua-title">${dua.title}</div>
+        ${getBadgeHtml(dua)}
+      </div>
+      <div class="dua-arabic">${dua.arabic}</div>
+      <div class="dua-translit">${dua.translit}</div>
+      <div class="dua-translation">«${dua.translation}»</div>
+      <div class="dua-source">${dua.source}</div>
+      ${dua.type === 'counter' ? renderCounter(dua) : `
+        <button class="dua-done-btn ${isDone ? 'done' : ''}" onclick="toggleDone('${dua.id}')">
+          ${isDone ? '✓ Прочитано' : '🤲 Прочитал'}
+        </button>
+      `}
+    </div>
+  `;
+};
+
+const renderContent = () => {
+  const list = DUA_DATA[currentTab];
+  const content = document.getElementById('content');
+
+  let html = '';
+
+  if (currentTab === 'sunnah') {
+    html += `<div class="section-label">Обязательный минимум после каждого намаза</div>`;
+  } else if (currentTab === 'personal') {
+    html += `<div class="section-label">Личные дуа — читай после Сунны</div>`;
+  } else {
+    const morning = list.filter(d => d.badge === 'morning');
+    const evening = list.filter(d => d.badge === 'evening');
+
+    html += `<div class="section-label">🌅 Утренние азкары</div>`;
+    html += morning.map((d, i) => renderCard(d, i)).join('');
+    html += `<div class="section-label" style="margin-top:0.5rem">🌙 Вечерние азкары</div>`;
+    html += evening.map((d, i) => renderCard(d, i)).join('');
+
+    content.innerHTML = html;
+    updateProgress();
+    return;
+  }
+
+  html += list.map((d, i) => renderCard(d, i)).join('');
+
+  // Итого блок
+  const done = list.filter(d =>
+    d.type === 'counter' ? (state[d.id + '_count'] || 0) >= d.count : !!state[d.id]
+  ).length;
+
+  if (done === list.length && done > 0) {
+    html += `
+      <div class="summary-card">
+        <div class="summary-title">Машааллах!</div>
+        <div class="summary-count">✅</div>
+        <div class="summary-sub">Все дуа прочитаны</div>
+        <div class="summary-arabic">رَبَّنَا تَقَبَّلْ مِنَّا</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem">Господь наш, прими от нас</div>
+      </div>
+    `;
+  }
+
+  content.innerHTML = html;
+  updateProgress();
+};
+
+// ── ПРОГРЕСС ──
+const updateProgress = () => {
+  const all = [...DUA_DATA.sunnah, ...DUA_DATA.personal, ...DUA_DATA.daily];
+  const total = all.length;
+  const done = all.filter(d =>
+    d.type === 'counter' ? (state[d.id + '_count'] || 0) >= d.count : !!state[d.id]
+  ).length;
+
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const circumference = 113;
+  const offset = circumference - (pct / 100 * circumference);
+
+  document.getElementById('progress-circle').style.strokeDashoffset = offset;
+  document.getElementById('progress-label').textContent = pct + '%';
+  document.getElementById('header-sub').textContent = `${done} из ${total} прочитано`;
+};
+
+// ── ДЕЙСТВИЯ ──
+window.toggleDone = (id) => {
+  state[id] = !state[id];
+  if (state[id] && navigator.vibrate) navigator.vibrate([30, 15, 30]);
+  saveState();
+  renderContent();
+};
+
+window.tapCounter = (id, target) => {
+  const cur = state[id + '_count'] || 0;
+  if (cur >= target) return;
+  state[id + '_count'] = cur + 1;
+  if (state[id + '_count'] >= target && navigator.vibrate) navigator.vibrate([40, 20, 40]);
+  saveState();
+  renderContent();
+};
+
+window.switchTab = (tab) => {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  renderContent();
+};
+
+window.markAllDone = () => {
+  const list = DUA_DATA[currentTab];
+  list.forEach(d => {
+    if (d.type === 'counter') state[d.id + '_count'] = d.count;
+    else state[d.id] = true;
+  });
+  saveState();
+  renderContent();
+  showToast('✅ Машааллах, TabarakAllah!');
+};
+
+window.resetDay = () => {
+  if (!confirm('Сбросить прогресс сегодняшнего дня?')) return;
+  state = {};
+  saveState();
+  renderContent();
+  showToast('🔄 Прогресс сброшен');
+};
+
+const showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+};
+
+// ── INIT ──
+loadState();
+renderContent();
+
+      // APP_VERSION — поднимать при каждом деплое
+      const APP_VERSION = 'v1';
+
+      // SW регистрация
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      }
+
+      // Автообновление при новой версии
+      const checkVersion = async () => {
+        try {
+          const res = await fetch('/index.html', { cache: 'no-store' });
+          const html = await res.text();
+          const match = html.match(/APP_VERSION = '([^']+)'/);
+          if (match && match[1] !== APP_VERSION) window.location.reload();
+        } catch(e) {}
+      };
+      checkVersion();
+      setInterval(checkVersion, 5 * 60 * 1000);
+</script>
+</body>
+</html>
